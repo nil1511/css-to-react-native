@@ -11,6 +11,8 @@ const numberOnlyRe = /^[+-]?(?:\d*\.\d*|[1-9]\d*)(?:e[+-]?\d+)?$/i
 const boolRe = /^true|false$/i
 const nullRe = /^null$/i
 const undefinedRe = /^undefined$/i
+const isVariable = value =>
+  typeof value === 'string' && value.indexOf('var') === 0
 
 // Undocumented export
 export const transformRawValue = (propName, value) => {
@@ -39,10 +41,18 @@ export const transformRawValue = (propName, value) => {
   const undefinedMatch = value.match(undefinedRe)
   if (undefinedMatch !== null) return undefined
 
+  if (isVariable(value)) {
+    return value
+  }
+
   return value
 }
 
 const baseTransformShorthandValue = (propName, value) => {
+  if (isVariable(value)) {
+    return { [propName]: value }
+  }
+
   const ast = parse(value)
   const tokenStream = new TokenStream(ast.nodes)
   return transforms[propName](tokenStream)

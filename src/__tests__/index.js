@@ -202,3 +202,16 @@ it('throws useful errors', () => {
     'Failed to parse declaration "margin: 10"'
   )
 })
+
+it('should support font variable', () => {
+  expect(transformCss([['fontFamily', 'var(--fam)']])).toEqual({
+    fontFamily: 'var(--fam)',
+  })
+  expect(transformCss([['--my-prop', 'var(--fam1)']])).toEqual({
+    '--my-prop': 'var(--fam1)',
+  })
+
+  expect(transformCss([['color', 'var(--primary-color)']])).toEqual({
+    color: 'var(--primary-color)',
+  })
+})
